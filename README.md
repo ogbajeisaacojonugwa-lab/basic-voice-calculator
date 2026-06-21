@@ -1,15 +1,30 @@
 building a voice input calculator
-AIM: to develop an off-hand system for calculations
+AIM: The objective of this project is to develop a completely hands-free, off-hand calculation engine.
 Current Project Status: Phase 1.5
+
+
 Current abilities:
 1. audio capture
-2. speech processing
-3. Functional Mappping
+2. speech processing-----Audio conversion into localized string text.
+3. Functional Mappping------Routing parsed text to programmatic mathematical execution functions.
 
-Current challenges:
-1.  the accent accuracy
-2.  The multi-form number obstacle
-3.  weight on cpu
+   
+Current Challenges:
+While "faster-whisper" solved the accuracy bottleneck, it introduced critical architectural constraints that are currently being debugged:
+
+1. The Block-Buffering Latency Gap
+The Problem: Unlike Vosk, Whisper cannot natively transcribe raw audio frame-by-frame in real-time. The system currently uses an interval-capture method (e.g., 3-second hard windows). 
+The Bottleneck: The system captures 3 seconds of sound, locks the stream to run processing math, and then restarts the buffer. Any speech that spills across that 3-second boundary is either severed or lost entirely.
+
+2. The Multi-Form Number Obstacle
+The Problem: The engine frequently converts spoken strings interchangeably into raw numbers ("5") or text terms ("five"), which causes failure points in basic string parsing models.
+The Fix: Implementing a "word2number" normalization wrapper to intercept strings and map text phrases to consistent integer data types prior to logic execution.(yet to be implemented)
+
+3. CPU Core Overhead
+The Problem: Running localized transformer models places a substantial processing load on the system hardware, causing thread delays between the audio collector loop and the inference module.
+
+---
+
 
 Stack:
 1. for STT engine we use Faster-whisper(base.en)
